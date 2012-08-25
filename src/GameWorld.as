@@ -35,13 +35,18 @@ package
 			add(player);
 			trace("yup. it's wood.");
 		}
-		override public function update():void {
+		override public function update():void {			
 			tileWorld.scrollRight(player.speed * FP.elapsed);
 			bg.scrollRight(player.speed * FP.elapsed);
 			var idealCameraY:Number = player.y - FP.screen.height/2;
+			var idealCameraX:Number = player.x - FP.screen.width/2;
 			if (Math.abs(idealCameraY - camera.y) > FP.screen.height / 16) {
 				camera.y += (idealCameraY - camera.y) * 0.1 * FP.elapsed;
 			}
+			if (Math.abs(idealCameraX - camera.x) > FP.screen.height / 16) {
+				camera.x += (idealCameraX - camera.x) * 0.1 * FP.elapsed;
+			}
+			
 			super.update();
 		}
 		
