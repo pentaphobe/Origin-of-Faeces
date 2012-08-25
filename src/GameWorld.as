@@ -12,8 +12,11 @@ package
 		public var tileWorld:TileWorld;
 		public var bg:TileWorld;
 		public var player:Player;
+		public var hud:HUD;
+		
 		public var scrollSpeed:Number = 100.0;
 		public var topSpeed:Number = 300.0;
+		
 		public function GameWorld()
 		{			
 			super();
@@ -33,10 +36,15 @@ package
 			add(bg);
 			player = new Player(FP.screen.width / 2, FP.screen.height / 2);
 			add(player);
+			
+			hud = new HUD;
+			add(hud);
 			trace("yup. it's wood.");
+			hud.reset();
 		}
 		override public function update():void {			
 			tileWorld.scrollRight(player.speed * FP.elapsed);
+			HUD.distanceRun += player.speed * FP.elapsed;
 			bg.scrollRight(player.speed * FP.elapsed);
 			var idealCameraY:Number = player.y - FP.screen.height/2;
 			var idealCameraX:Number = player.x - FP.screen.width/2;

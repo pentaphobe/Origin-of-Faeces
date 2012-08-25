@@ -1,5 +1,7 @@
 package
 {
+	import flash.geom.Rectangle;
+	
 	import net.flashpunk.*;
 	import net.flashpunk.graphics.*;
 	import net.flashpunk.masks.Grid;
@@ -70,13 +72,14 @@ package
 					// if the height is low then force it to higher.  eventually we'll want gap logic here
 					h = 4;
 				}
-				edgeType = 1;
+				
+				theMap.setTile(x-1, theMap.rows - lastHeight, 4 + this.tileIndexOffset);
 			}
-			if (lastHeight != h) { runLength = 0; }
+			if (lastHeight != h) { runLength = 0; } else { edgeType = 0; }
 			lastHeight = h;
 			theMap.setRect(x, theMap.rows - h, w, h, 1 + this.tileIndexOffset);
 			theMap.setTile(x, theMap.rows - h, 3 + edgeType + this.tileIndexOffset);
-			theMap.updateAll();
+			theMap.updateAll();			
 		}
 	}
 }
