@@ -13,7 +13,7 @@ package
 	{
 		public function LD24_CanAPEalt()
 		{
-//			super(640, 480, 60, false);
+//			super(960, 480, 60, false);
 
 			super(480, 240, 60, false);
 			scaleX = 2;

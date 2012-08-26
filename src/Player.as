@@ -40,7 +40,7 @@ package
 		public function Player(x:Number=0, y:Number=0)
 		{
 			//graphic = Image.createRect(8, 8);
-			spriteMap = new Spritemap(GameWorld.PLAYER, 32, 32);
+			spriteMap = new Spritemap(Assets.PLAYER, 32, 32);
 			spriteMap.add("stand_right", [0], 0);
 			spriteMap.add("stand_left", [8], 0);
 			spriteMap.add("run_right", [1, 0, 2, 0], 10);

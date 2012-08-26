@@ -12,12 +12,7 @@ package
 	
 	public class GameWorld extends World
 	{
-		[Embed(source = "assets/tiles.png")] public static const TILES:Class;
-		[Embed(source = "assets/brain.png")] public static const BRAIN:Class;
-		[Embed(source = "assets/tree.png")] public static const TREE:Class;
-		[Embed(source = "assets/ape_sheet.png")] public static const PLAYER:Class;
-		[Embed(source = "assets/sky.png")] public static const SKY:Class;
-		[Embed(source = "assets/ape profile.png")] public static const APE_PROFILE:Class;
+
 		
 		public static var friction:Vec2 = new Vec2(0.65, 0.85);
 		public static var gravity:Number = 1.0;
@@ -51,7 +46,7 @@ package
 //			bg = new TileWorld(24, false, 0.3, 13);
 //			bg.layer = 3;			
 //			add(bg);
-			sky = new Entity(0, 0, new Backdrop(SKY, true, false));
+			sky = new Entity(0, 0, new Backdrop(Assets.SKY, true, false));
 			sky.width = FP.screen.width;
 			sky.height= FP.screen.height;
 			add(sky);
@@ -115,7 +110,7 @@ package
 
 			for (var i:Number = 0; i < building.tileWidth; i++) {	
 				if (Math.random() < 0.2) {
-					var newItem:Pickup = new Pickup("brain", x, building.y - y, new Image(BRAIN));
+					var newItem:Pickup = new Pickup("brain", x, building.y - y, new Image(Assets.BRAIN));
 					building.items.push(newItem);	
 					add(newItem);
 				}
@@ -132,7 +127,7 @@ package
 			var x:Number = 0;
 			while (x < building.width - Building.TILE_SIZE) {
 				if (Math.random() < 0.2) {
-					var swinger:Swinger = new Swinger(building.x + x - (Building.TILE_SIZE / 2), building.y + Building.TILE_SIZE, new Image(TREE));
+					var swinger:Swinger = new Swinger(building.x + x - (Building.TILE_SIZE / 2), building.y + Building.TILE_SIZE, new Image(Assets.TREE));
 					building.items.push(swinger);
 					add(swinger);
 				}

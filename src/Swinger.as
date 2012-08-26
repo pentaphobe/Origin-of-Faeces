@@ -13,7 +13,7 @@ package
 		{
  			setHitbox(48, 32, -8, -8);
 			type="swinger";
-			super(x, y-128, graphic, mask);
+			super(x, y-127, graphic, mask);
 		}
 	}
 }

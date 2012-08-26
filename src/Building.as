@@ -29,7 +29,7 @@ package
 			tileWidth = tileW;
 			tileHeight = tileH;
 			tileSet = tileset;
-			theMap = new Tilemap(GameWorld.TILES, tileW * TILE_SIZE, tileH * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+			theMap = new Tilemap(Assets.TILES, tileW * TILE_SIZE, tileH * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 			graphic = theMap;
 			
 			buildtheMap();

@@ -11,7 +11,7 @@ package
 		public function Pickup(pickType:String, x:Number=0, y:Number=0, graphic:Graphic=null, mask:Mask=null)
 		{
 			this.pickupType = pickType;
-			this.setHitbox(16, 16);
+//			this.setHitbox(graphic.width, graphic.height);
 			super(x, y, graphic, mask);
 		}
 		override public function update():void {

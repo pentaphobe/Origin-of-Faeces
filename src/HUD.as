@@ -12,7 +12,7 @@ package
 	{
 		private var scoreText:Text = new Text(String(distanceRun), 10, 8, 200, 50);
 		private var pickupText:Text = new Text("", 10, 20, 200, 50);
-		private var profileImage:Image = new Image(GameWorld.APE_PROFILE);
+		private var profileImage:Image = new Image(Assets.APE_PROFILE);
 		public static var distanceRun:Number = 0;
 		public static var pickups:Object = {};
 		public function HUD()
