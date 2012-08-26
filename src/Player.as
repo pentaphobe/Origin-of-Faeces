@@ -6,6 +6,7 @@ package
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.graphics.Spritemap;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	
@@ -19,6 +20,9 @@ package
 		public var jumpTime:Number = 0.2;
 		public var jumpCounter:Number;
 		
+		
+		public var facingRight:Boolean = true;
+		
 		public var swinger:Swinger;
 		public var swinging:Boolean = false;
 		
@@ -29,12 +33,22 @@ package
 		
 		public var itemMagnetStrength:Number = 30.0;
 		public var itemMagnetRange:Number = 40.0;
-		
+		public var spriteMap:Spritemap;
 		public function Player(x:Number=0, y:Number=0)
 		{
-			graphic = Image.createRect(8, 8);
-			width = 8;
-			height = 8;
+			//graphic = Image.createRect(8, 8);
+			spriteMap = new Spritemap(GameWorld.PLAYER, 32, 32);
+			spriteMap.add("stand_right", [0], 0);
+			spriteMap.add("stand_left", [8], 0);
+			spriteMap.add("run_right", [0, 1, 0, 2], 10);
+			spriteMap.add("run_left", [8], 10);
+			spriteMap.add("jump_right", [16], 10);
+			spriteMap.add("jump_left", [24], 10);
+			graphic = spriteMap;
+			spriteMap.originX = 16;
+			spriteMap.originY = 16;
+			
+			setHitbox(32, 32, 16, 16);
 			type = "player";
 			Input.define("left", Key.LEFT);
 			Input.define("right", Key.RIGHT);
@@ -46,6 +60,8 @@ package
 			FP.console.watch(swinging, swinger);
 		}
 		override public function update():void {
+			var walked:Boolean = false;
+			
 			if (Input.check("left")) { 
 //				targetSpeed = bottomSpeed;
 				if (swinging) {
@@ -57,7 +73,10 @@ package
 					} else {
 						acc.x -= speed * 0.8 * FP.elapsed;
 					}
+					walked = true;
 				}
+				facingRight = false;
+				
 			} else if (Input.check("right")) { 
 //				targetSpeed = topSpeed;
 				if (swinging) {
@@ -69,7 +88,10 @@ package
 					} else {
 						acc.x += speed * 0.8 * FP.elapsed;
 					}
+					walked = true;					
 				}
+				facingRight = true;
+				
 			} else {
 				targetSpeed = (topSpeed + bottomSpeed) / 2;
 			}
@@ -100,11 +122,15 @@ package
 					
 					var dx:Number = x - swinger.x;
 					var dy:Number = y - swinger.y;
-					swingDist = Math.sqrt(dx*dx + dy*dy);
-					var ang:Number = Math.atan2(dy, dx) * 180 / Math.PI;
-					swingVel = vel.x * Math.sin(ang) + vel.y * Math.cos(ang);					
-					if (swinger != null && swingDist < maxArmLength) {
-						swinging = true;	
+					
+					// only start swinging if we're at least slightly under the swinger point
+					if (dy < 0) {
+						swingDist = Math.sqrt(dx*dx + dy*dy);
+						var ang:Number = Math.atan2(dy, dx) * 180 / Math.PI;
+						swingVel = vel.x * Math.sin(ang) + vel.y * Math.cos(ang);					
+						if (swinger != null && swingDist < maxArmLength) {
+							swinging = true;	
+						}
 					}
 				} else {
 					// continue swinging
@@ -126,6 +152,15 @@ package
 			
 			if (!swinging) {
 //				vel.x += speed * FP.elapsed;
+				if (onGround) {		
+					if (walked) {
+						spriteMap.play( vel.x < 0 ? "run_left" : "run_right");
+					} else {
+						spriteMap.play( facingRight ? "stand_right" : "stand_left");
+					}
+				} else {
+					spriteMap.play( vel.x < 0 ? "jump_left" : "jump_right");
+				}
 				super.update();
 			} else {			
 				 // update swingy stuff

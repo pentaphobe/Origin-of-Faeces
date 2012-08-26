@@ -1,8 +1,12 @@
 package
 {
+	import flash.geom.Point;
+	
 	import net.flashpunk.*;
+	import net.flashpunk.graphics.Backdrop;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
+	import net.flashpunk.graphics.Text;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	
@@ -11,12 +15,15 @@ package
 		[Embed(source = "assets/tiles.png")] public static const TILES:Class;
 		[Embed(source = "assets/brain.png")] public static const BRAIN:Class;
 		[Embed(source = "assets/tree.png")] public static const TREE:Class;
+		[Embed(source = "assets/ape_sheet.png")] public static const PLAYER:Class;
+		[Embed(source = "assets/sky.png")] public static const SKY:Class;
 		
 		public static var friction:Vec2 = new Vec2(0.65, 0.85);
 		public static var gravity:Number = 1.0;
 		
 		public var tileWorld:TileWorld;
 		public var bg:TileWorld;
+		public var sky:Entity;
 		public var player:Player;
 		public var hud:HUD;
 		public var buildings:Array = [];
@@ -41,6 +48,10 @@ package
 //			bg = new TileWorld(24, false, 0.3, 13);
 //			bg.layer = 3;			
 //			add(bg);
+			sky = new Entity(0, 0, new Backdrop(SKY, true, false));
+			sky.width = FP.screen.width;
+			sky.height= FP.screen.height;
+			add(sky);
 			
 			player = new Player(FP.width / 6, 5);
 			add(player);
@@ -55,8 +66,8 @@ package
 			player.x = lastBuilding.x + 10;
 			player.y = lastBuilding.y - 30;
 			trace("yup. it's wood.");
-			camera.x = player.x - FP.screen.height / 2;
-			camera.y = player.y - FP.screen.width / 2;
+			camera.x = player.x - FP.screen.width / 2;
+			camera.y = player.y - FP.screen.height / 2;
 			
 		}
 		public function updateBuildings():void {
@@ -83,10 +94,14 @@ package
 			}
 //			camera.x = idealCameraX;
 //			camera.y = idealCameraY;
+			
+			sky.y = camera.y-(sky.height*1.5) - camera.y*0.25;
+			sky.x = camera.x + FP.screen.width / 2;
 			super.update();
 		}
 		
 		override public function render():void {
+			
 			super.render();
 		}		
 		public function addItems(building:Building) {
