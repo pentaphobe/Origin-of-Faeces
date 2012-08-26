@@ -37,7 +37,7 @@ package
 		public function doPickup():void {
 //			trace("Item grabbed");
 			HUD.addPickup(pickupType);
-			world.remove(this);
+			(world as GameWorld).doPickup(this);
 		}
 	}
 }

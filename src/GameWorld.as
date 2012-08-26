@@ -1,5 +1,6 @@
 package
 {
+	import flash.display.BitmapData;
 	import flash.geom.Point;
 	
 	import net.flashpunk.*;
@@ -20,6 +21,7 @@ package
 		public var tileWorld:TileWorld;
 		public var bg:TileWorld;
 		public var sky:Entity;
+		public var parallax:Array = [];
 		public var player:Player;
 		public var hud:HUD;
 		public var buildings:Array = [];
@@ -33,6 +35,26 @@ package
 			super();					
 		}
 		override public function begin():void {
+			FP.screen.color = 0x57708b;
+			Input.define("left", Key.LEFT);
+			Input.define("right", Key.RIGHT);
+			Input.define("jump", Key.Z, Key.UP);
+			Input.define("swing", Key.X);
+			Input.define("start", Key.Z, Key.SPACE);	
+			
+			for (var i:int=0;i<2;i++) {
+				var par:Entity = new Entity(0, 0, new Backdrop(Assets.MOUNTAINS, true, false));
+				par.width = FP.screen.width * 3;				
+				par.y += i * 10;
+				par.x += i * 30;
+				(par.graphic as Backdrop).color = (0x40 << 16) >> i | (0x44 << 8) >> i | (0x4);
+				parallax.push(par);
+			}
+			// a solid for the bottom
+//			var img:Image = Image.createRect(FP.screen.width * 3, FP.screen.height);
+//			img.relative = false;
+//			add(new Entity(4 * 10, 4 * 30, img));
+			
 			newGame();
 		}
 		public function playerDied():void {
@@ -51,6 +73,8 @@ package
 			sky.height= FP.screen.height;
 			add(sky);
 			
+			this.addList(parallax);
+			
 			player = new Player(FP.width / 6, 5);
 			add(player);
 			
@@ -63,6 +87,10 @@ package
 			updateBuildings();
 			player.x = lastBuilding.x;
 			player.y = lastBuilding.y - 20;
+			
+			
+			
+			
 			trace("yup. it's wood.");
 			camera.x = player.x - FP.screen.width / 2;
 			camera.y = player.y - FP.screen.height / 2;
@@ -87,7 +115,7 @@ package
 			var idealCameraY:Number = player.y - FP.screen.height/2;
 			var idealCameraX:Number = player.x - FP.screen.width/4;
 			if (Math.abs(idealCameraY - camera.y) > FP.screen.height / 8) {
-				camera.y += (idealCameraY - camera.y) * 4 * FP.elapsed;
+				camera.y += (idealCameraY - camera.y) * 8 * FP.elapsed;
 			}
 			if (Math.abs(idealCameraX - camera.x) > FP.screen.height / 8) {
 				camera.x += (idealCameraX - camera.x) * 4 * FP.elapsed;
@@ -95,13 +123,21 @@ package
 //			camera.x = idealCameraX;
 //			camera.y = idealCameraY;
 			
-			sky.y = camera.y-(sky.height*2.4) - camera.y*0.65;
+			sky.y = camera.y-(sky.height*1.4) - camera.y*0.35;
 			sky.x = camera.x + FP.screen.width / 2;
+			
+			for (var i:int=0;i<parallax.length;i++) {
+				var ent:Entity = parallax[i] as Entity;
+				var para:Number = ((1-i) / 24.0);
+//				ent.x = (camera.x * 0.99 * para) + FP.screen.width / 2 + (i * 327);
+				ent.y = (camera.y * 0.9) - (FP.screen.height) - camera.y*0.4 + i*16;
+				ent.x = (camera.x % 1024) * -0.05 * para + (i * 327);
+				
+			}
 			super.update();
 		}
 		
-		override public function render():void {
-			
+		override public function render():void {			
 			super.render();
 		}		
 		public function addItems(building:Building) {
@@ -109,7 +145,7 @@ package
 			var y:Number = Math.random()*50 + 20;
 
 			for (var i:Number = 0; i < building.tileWidth; i++) {	
-				if (Math.random() < 0.2) {
+				if (Math.random() < 0.1) {
 					var newItem:Pickup = new Pickup("brain", x, building.y - y, new Image(Assets.BRAIN));
 					building.items.push(newItem);	
 					add(newItem);
@@ -181,10 +217,14 @@ package
 				
 				var oldBuilding:Building = buildings.shift();
 				this.removeList(oldBuilding.items);
-				this.remove(oldBuilding);
+				this.recycle(oldBuilding);
 				++removedTotal;
 			}	
 			trace("total removed:" + removedTotal);
+		}
+		public function doPickup(src:Entity):void {
+			player.emit("sparkle", src.x, src.y, 10);
+			recycle(src);
 		}
 	}
 }

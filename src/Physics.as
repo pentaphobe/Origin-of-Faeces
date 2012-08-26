@@ -17,6 +17,7 @@ package
 		public var mass:Number = 0.5;
 		
 		public var onGround:Boolean = false;
+		public var wasOnGround:Boolean = false;
 		public var friction:Vec2 = GameWorld.friction;
 		public function Physics(x:Number=0, y:Number=0, solid:Boolean = true, graphic:Graphic=null, mask:Mask=null)
 		{
@@ -42,6 +43,7 @@ package
 		}
 		public function checkCollision():void {
 			if (collide("solid", x, y+1)) {
+				wasOnGround = onGround;
 				onGround = true;
 				if (vel.y > 0) {
 					vel.y = 0;
@@ -50,6 +52,8 @@ package
 					y -= 1.0;
 				}
 			} else {
+				wasOnGround = onGround;
+				onGround = false;
 				fall();
 			}			
 		}

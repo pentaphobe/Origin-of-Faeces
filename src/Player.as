@@ -1,15 +1,18 @@
 package
 {
+	import flash.display.BitmapData;
 	import flash.utils.Dictionary;
 	
 	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
+	import net.flashpunk.graphics.Emitter;
+	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
+	import net.flashpunk.utils.*;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
-	import net.flashpunk.utils.*;
 	
 	public class Player extends Physics
 	{
@@ -30,6 +33,8 @@ package
 		
 		public var swingVel:Number = 0;
 		public var swingDist:Number;
+		public var swingAngle:Number;
+		
 		public var minArmLength:Number = 48;
 		public var idealArmLength:Number = 96;
 		public var maxArmLength:Number = 128;
@@ -37,6 +42,10 @@ package
 		public var itemMagnetStrength:Number = 30.0;
 		public var itemMagnetRange:Number = 40.0;
 		public var spriteMap:Spritemap;
+		public var armGraphic:Image = new Image(Assets.APE_ARM);
+		public var emitter:Emitter;
+
+		
 		public function Player(x:Number=0, y:Number=0)
 		{
 			//graphic = Image.createRect(8, 8);
@@ -47,16 +56,39 @@ package
 			spriteMap.add("run_left", [8], 10);
 			spriteMap.add("jump_right", [16], 10);
 			spriteMap.add("jump_left", [24], 10);
-			graphic = spriteMap;
 			spriteMap.originX = 16;
 			spriteMap.originY = 16;
 			
+//			emitter = new Emitter(new BitmapData(1,1), 1, 1);
+			emitter = new Emitter(Assets.PARTICLE_DUST, 3, 3);
+			//			emitter.newType("sparkle", [0, 1, 2, 3, 4]);
+			emitter.relative = false;
+			
+			emitter.newType("sparkle", [0]);
+			emitter.setAlpha("sparkle",1.0, 0);
+			emitter.setMotion("sparkle", 0, 100, 3, 360, -100, -0.5, Ease.quadOut);
+			emitter.setColor("sparkle", 0xef5e5e);
+			
+			emitter.newType("dustCloud", [0]);
+			emitter.setAlpha("dustCloud", 1.0, 0);
+			emitter.setMotion("dustCloud", 5, 15, 3, 170, -5, -0.5, Ease.quadOut);
+			emitter.setColor("dustCloud", 0x404000);
+			emitter.setGravity("dustCloud", 0.8);
+			
+			emitter.newType("dustCloudBig", [0]);
+			emitter.setAlpha("dustCloudBig", 1.0, 0);
+			emitter.setMotion("dustCloudBig", 5, 50, 4, 170, -5, -0.5, Ease.quadOut);
+			emitter.setColor("dustCloudBig", 0x404000);
+			emitter.setGravity("dustCloudBig", 0.8);
+			
+			
+//			emitter.setMotion("dustCloud", 0, 50, 2, 360, -40, -0.5, Ease.quadOut);			
+			
+			graphic = new Graphiclist(emitter, spriteMap);
+			
+			
 			setHitbox(32, 32, 16, 16);
 			type = "player";
-			Input.define("left", Key.LEFT);
-			Input.define("right", Key.RIGHT);
-			Input.define("jump", Key.Z, Key.UP);
-			Input.define("swing", Key.X);
 			super(x, y, false, graphic, mask);
 			mass = 0.7;
 			layer = -6;
@@ -107,8 +139,12 @@ package
 					jumpCounter = jumpTime;
 					if (onGround) {
 						canDoubleJump = true;
+						emit("dustCloudBig", x, y + height / 2, 10);
+						Assets.jumpSound.play(0.1);
 					} else {
 						canDoubleJump = false;
+						Assets.jumpSound.play(0.1);
+						vel.y = 0;
 					}
 				} else {
 					jumpCounter -= FP.elapsed;
@@ -145,6 +181,7 @@ package
 								}
 								trace("started swinging with velocity: " + swingVel);
 							}
+							swinger.emit("leaves", swinger.x  + 16, swinger.y + 16, Math.random()*20+3);
 	//					}
 					}
 				} else {
@@ -175,6 +212,7 @@ package
 				if (onGround) {		
 					if (walked) {
 						spriteMap.play( vel.x < 0 ? "run_left" : "run_right");
+						Assets.footStepSound.play(0.05);
 					} else {
 						spriteMap.play( facingRight ? "stand_right" : "stand_left");
 					}
@@ -182,6 +220,10 @@ package
 					spriteMap.play( vel.x < 0 ? "jump_left" : "jump_right");
 				}
 				super.update();
+				if (onGround && !wasOnGround) {
+					emit("dustCloudBig", x, y + height / 2, 30);
+					Assets.landingSound.play(0.5);
+				}
 			} else {			
 				 // update swingy stuff
 				var dx:Number = x - swinger.centerX;
@@ -220,10 +262,11 @@ package
 				 y = newY;
 
 				 // [@todo fix this part - it's supposed to keep the arm within a reasonable length range]
-//				 dx = x - swinger.centerX;
-//				 dy = y - swinger.centerY;
-//				 var dist:Number = Math.sqrt(dx*dx + dy*dy);
-//				 ang = Math.atan2(dy, dx);
+				 dx = x - swinger.centerX;
+				 dy = y - swinger.centerY;
+				 var dist:Number = Math.sqrt(dx*dx + dy*dy);
+				 ang = Math.atan2(dy, dx);
+				 swingAngle = ang;
 //				 newX = Math.cos(ang) * idealArmLength;
 //				 newY = Math.sin(ang) * idealArmLength;
 //
@@ -250,10 +293,19 @@ package
 				 x += swinger.centerX;
 				 y += swinger.centerY;
 			}
+			
+			if (spriteMap.currentAnim === "run_right" || spriteMap.currentAnim === "run_left") {
+				emit("dustCloud", x, y + height / 2, 5);
+			}
+			
+			
 		}
 		override public function render():void {
 			if (swinging) {
-				Draw.line(x, y, swinger.centerX, swinger.centerY);
+				Draw.line(x, y, swinger.centerX, swinger.centerY, 0x808080);
+				
+//				FP.matrix.rotate(swingAngle);
+//				FP.buffer.draw(armGraphic);
 			}
 			super.render();
 		}
@@ -261,6 +313,11 @@ package
 			if (x < world.camera.x-32 || y < world.camera.y-FP.screen.height || x > world.camera.x+FP.screen.width+32 || y > FP.screen.height) {				
 				(world as GameWorld).playerDied();
 
+			}
+		}
+		public function emit(name:String, xx:Number=0, yy:Number=0, count:int = 1) {
+			for (var i:int=0;i<count;i++) {
+				emitter.emit(name, xx, yy);
 			}
 		}
 	}

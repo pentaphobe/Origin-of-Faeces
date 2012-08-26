@@ -18,12 +18,12 @@ package
 			super(480, 240, 60, false);
 			scaleX = 2;
 			scaleY = 2;
-//			FP.console.enable();
+			FP.console.enable();
 		}
 		
 		override public function init():void {
 			trace("Started successfully");
-			FP.world = new GameWorld;
+			FP.world = new MenuWorld;
 			super.init();
 		}
 	}
