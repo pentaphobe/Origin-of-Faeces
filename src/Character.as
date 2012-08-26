@@ -16,13 +16,13 @@ package
 		public var mass:Number = 0.5;
 		
 		public var onGround:Boolean = false;
-		
+		public var friction:Number = GameWorld.friction;
 		public function Character(x:Number=0, y:Number=0, graphic:Graphic=null, mask:Mask=null)
 		{
 			super(x, y, graphic, mask);
 		}
 		override public function update():void {
-			vel.multS(GameWorld.friction);
+			vel.multS(friction);
 			vel.add(acc);
 			
 //			x += vel.x;
@@ -43,8 +43,7 @@ package
 				}
 			} else {
 				fall();
-			}
-			FP.console.log(onGround);
+			}			
 		}
 		public function move():void {
 			moveBy(vel.x, vel.y, "solid", true);
@@ -66,7 +65,7 @@ package
 				}
 			}
 			if (collided) {
-				vel.multS(-GameWorld.friction);
+				vel.multS(-friction);
 			}
 			onGround = collided;			
 		}

@@ -1,14 +1,19 @@
 package
 {
 	import net.flashpunk.Entity;
+	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
 	import net.flashpunk.graphics.Tilemap;
-	import net.flashpunk.FP;
 	
+	/*
+	 * A "building" - but really just a generic chunk of tiles that auto generates
+	 * hopefully I'll get enough done that I can justify adding changing scenery at which point we'll have the city
+	 * but more likely this will always be a jungle building :)
+	 */
 	public class Building extends Entity
 	{
-		private const TILE_SIZE:Number = 16;
+		public static const TILE_SIZE:Number = 16;
 		private const TILE_FILL:uint = 0;
 		private const TILE_TOP:uint = 1;
 		private const TILE_TOP_LEFT:uint = 2;
@@ -17,6 +22,7 @@ package
 		public var tileHeight:uint;
 		public var theMap:Tilemap;
 		public var tileSet:Array;
+		public var items:Array = [];
 		public function Building(tileset:Array, tileW:Number, tileH:Number, x:Number=0)
 		{
 			tileWidth = tileW;

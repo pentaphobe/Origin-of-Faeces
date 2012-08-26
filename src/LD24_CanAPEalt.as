@@ -13,9 +13,9 @@ package
 	{
 		public function LD24_CanAPEalt()
 		{
-			super(320, 240, 60, true);
-			scaleX = 2;
-			scaleY = 2;
+			super(640, 480, 60, false);
+//			scaleX = 2;
+//			scaleY = 2;
 			FP.console.enable();
 		}
 		

@@ -21,6 +21,7 @@ package
 			graphic = Image.createRect(8, 8);
 			width = 8;
 			height = 8;
+			type = "player";
 			Input.define("left", Key.LEFT);
 			Input.define("right", Key.RIGHT);
 			Input.define("jump", Key.Z, Key.UP);
@@ -35,17 +36,20 @@ package
 			} else {
 				targetSpeed = (topSpeed + bottomSpeed) / 2;
 			}
+			friction = GameWorld.friction;
 			if (Input.check("jump")) {
 				if (onGround && Input.pressed("jump")) {
 //					yVel -= jumpEnergy;
 					vel.y -= jumpEnergy;
-					vel.x += jumpEnergy * 0.25;
+					vel.x += jumpEnergy * 0.5;
 					jumpCounter = jumpTime;
 				} else {
 					jumpCounter -= FP.elapsed;
 					if (jumpCounter > 0 && vel.y > 0) {					
 //						yVel -= jumpEnergy * 0.5;
-						vel.y -= jumpEnergy * 0.5;
+//						vel.y -= jumpEnergy * 0.75;
+						vel.x += jumpEnergy * 0.25 * jumpCounter;						
+						vel.y -= GameWorld.gravity * mass + jumpEnergy * 0.5 * jumpCounter;
 					}
 				}
 			}
@@ -53,13 +57,13 @@ package
 				(world as GameWorld).playerDied();
 			}
 			speed += (targetSpeed - speed) * 0.1;
-			vel.x = speed * FP.elapsed;
+			vel.x += speed * FP.elapsed;
 			topSpeed += 0.2;
 			bottomSpeed += 0.1;
 			super.update();
 		}
 		override public function checkBounds():void {
-			if (x < world.camera.x-32 || y < world.camera.y-FP.screen.height || x > world.camera.x+FP.screen.width+32 || y > world.camera.y+FP.screen.height) {				
+			if (x < world.camera.x-32 || y < world.camera.y-FP.screen.height || x > world.camera.x+FP.screen.width+32 || y > FP.screen.height) {				
 				(world as GameWorld).playerDied();
 
 			}
