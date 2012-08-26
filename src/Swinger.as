@@ -11,10 +11,9 @@ package
 	{
 		public function Swinger(x:Number=0, y:Number=0, graphic:Graphic=null, mask:Mask=null)
 		{
-			setHitbox(16, 16, -8, 0);
-			
+ 			setHitbox(32, 32, -16, 0);
 			type="swinger";
-			super(x, y - 64, graphic, mask);
+			super(x, y-128, graphic, mask);
 		}
 	}
 }

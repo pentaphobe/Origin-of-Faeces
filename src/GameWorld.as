@@ -63,8 +63,8 @@ package
 			lastBuilding = null;
 			buildings = [];
 			updateBuildings();
-			player.x = lastBuilding.x + 10;
-			player.y = lastBuilding.y - 30;
+			player.x = lastBuilding.x;
+			player.y = lastBuilding.y - 20;
 			trace("yup. it's wood.");
 			camera.x = player.x - FP.screen.width / 2;
 			camera.y = player.y - FP.screen.height / 2;
@@ -75,8 +75,8 @@ package
 				spawnBuilding();
 			}
 		}
-		public function entityOnScreen(e:Entity):Boolean {			
-			return e.collideRect(e.x, e.y, camera.x, camera.y, FP.screen.width, FP.screen.height)
+		public function entityOnScreen(e:Entity, margin:Number=0):Boolean {			
+			return e.collideRect(e.x, e.y, camera.x - margin, camera.y - margin, FP.screen.width + (2*margin), FP.screen.height + (2*margin));
 		}
 		override public function update():void {	
 			updateBuildings();
@@ -86,7 +86,7 @@ package
 			
 			var idealCameraY:Number = player.y - FP.screen.height/2;
 			var idealCameraX:Number = player.x - FP.screen.width/4;
-			if (Math.abs(idealCameraY - camera.y) > FP.screen.height / 4) {
+			if (Math.abs(idealCameraY - camera.y) > FP.screen.height / 8) {
 				camera.y += (idealCameraY - camera.y) * 4 * FP.elapsed;
 			}
 			if (Math.abs(idealCameraX - camera.x) > FP.screen.height / 8) {
@@ -95,7 +95,7 @@ package
 //			camera.x = idealCameraX;
 //			camera.y = idealCameraY;
 			
-			sky.y = camera.y-(sky.height*1.5) - camera.y*0.25;
+			sky.y = camera.y-(sky.height*2.4) - camera.y*0.65;
 			sky.x = camera.x + FP.screen.width / 2;
 			super.update();
 		}
@@ -107,6 +107,7 @@ package
 		public function addItems(building:Building) {
 			var x:Number = building.x;
 			var y:Number = Math.random()*50 + 20;
+
 			for (var i:Number = 0; i < building.tileWidth; i++) {	
 				if (Math.random() < 0.2) {
 					var newItem:Pickup = new Pickup("brain", x, building.y - y, new Image(BRAIN));
@@ -124,19 +125,19 @@ package
 		}
 		public function addSwingers(building:Building) {
 			var x:Number = 0;
-			while (x < building.width) {
+			while (x < building.width - Building.TILE_SIZE) {
 				if (Math.random() < 0.2) {
-					var swinger:Swinger = new Swinger(building.x + x, building.y, new Image(TREE));
+					var swinger:Swinger = new Swinger(building.x + x - (Building.TILE_SIZE / 2), building.y + Building.TILE_SIZE, new Image(TREE));
 					building.items.push(swinger);
 					add(swinger);
 				}
-				x += 16;
+				x += Building.TILE_SIZE;
 			}
 		}
 		public function spawnBuilding() {
 			var newX:Number = 0;
 			var wid:Number = Math.random() * 20 + 12;
-			var hei:Number = 50;
+			var hei:Number = 40;
 			
 			if (lastBuilding != null) {
 				newX = lastBuilding.x + lastBuilding.width;
@@ -154,7 +155,7 @@ package
 			}
 			if (lastBuilding != null && Math.random() < 0.1) {
 				// create a gap
-				var gapWidth:Number = (Math.random() * 10 + 1) * 16;
+				var gapWidth:Number = (Math.random() * (player.speed / Building.TILE_SIZE) + 1) * Building.TILE_SIZE;
 				newX += gapWidth;
 				if (hei - lastBuilding.tileHeight > gapWidth) {
 					hei = lastBuilding.tileHeight - gapWidth;
@@ -163,22 +164,27 @@ package
 			
 			if (hei < 1) hei = 1;
 			if (wid < 10) wid = 10;
-			var newBuilding:Building = new Building([1,3,2,4], wid, hei, newX);
+			var newBuilding:Building = new Building([1,3,2,4,[5,6,7]], wid, hei, newX);
 			buildings.push(newBuilding);
 			lastBuilding = newBuilding;
 			addSwingers(newBuilding);
 			addItems(newBuilding);
 			
+			cullBuildings();
 
 			add(newBuilding);
 		}		
 		public function cullBuildings():void {
 			var removedTotal:uint = 0;
-			while (buildings.length > 0 && !entityOnScreen(buildings[0])) {
+			while (buildings.length > 0 && !entityOnScreen(buildings[0], FP.screen.width)) {
+				if ( Math.abs(buildings[0].x - player.x) < buildings[0].width) break;
+				
 				var oldBuilding:Building = buildings.shift();
 				this.removeList(oldBuilding.items);
+				this.remove(oldBuilding);
 				++removedTotal;
-			}			
+			}	
+			trace("total removed:" + removedTotal);
 		}
 	}
 }

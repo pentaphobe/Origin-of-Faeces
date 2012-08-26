@@ -1,7 +1,7 @@
 package
 {
 	import net.flashpunk.*;
-	[SWF(width = "640", height="480")] 
+	[SWF(width = "960", height="480")] 
 	/*
 		Sidescroller canabalt-like with apes picking up brains and slowly gaining skill
 		
@@ -15,7 +15,7 @@ package
 		{
 //			super(640, 480, 60, false);
 
-			super(320, 240, 60, false);
+			super(480, 240, 60, false);
 			scaleX = 2;
 			scaleY = 2;
 			FP.console.enable();
