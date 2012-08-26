@@ -3,7 +3,7 @@ package
 	import net.flashpunk.Entity;
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
-	
+	import net.flashpunk.FP;
 	/*
 	 * A character in the game
 	 *
@@ -24,14 +24,34 @@ package
 		override public function update():void {
 			vel.multS(GameWorld.friction);
 			vel.add(acc);
-			vel.y += GameWorld.gravity * mass;
-			x += vel.x;
-			y += vel.y;
+			
+//			x += vel.x;
+//			y += vel.y;
 			checkCollision();
+			move();
 			checkBounds();
 			acc.set(0, 0);
 		}
 		public function checkCollision():void {
+			if (collide("solid", x, y+1)) {
+				onGround = true;
+				if (vel.y > 0) {
+					vel.y = 0;
+				}
+				if (collide("solid", x, y)) {
+					y -= 1.0;
+				}
+			} else {
+				fall();
+			}
+			FP.console.log(onGround);
+		}
+		public function move():void {
+			moveBy(vel.x, vel.y, "solid", true);
+		}
+		public function fall():void {
+			vel.y += GameWorld.gravity * mass;
+			
 			var oldVel:Vec2 = new Vec2(vel.x, vel.y);
 			var collided:Boolean = false;
 			while (true) {
@@ -48,7 +68,7 @@ package
 			if (collided) {
 				vel.multS(-GameWorld.friction);
 			}
-			onGround = collided;
+			onGround = collided;			
 		}
 		public function checkBounds():void {
 			

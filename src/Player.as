@@ -13,7 +13,7 @@ package
 		public var bottomSpeed:Number = 50.0;
 		public var targetSpeed:Number = 5.0;
 		public var speed:Number = 30.0;
-		public var jumpEnergy:Number = 19.0;
+		public var jumpEnergy:Number = 29.0;
 		public var jumpTime:Number = 0.2;
 		public var jumpCounter:Number;
 		public function Player(x:Number=0, y:Number=0)
@@ -39,6 +39,7 @@ package
 				if (onGround && Input.pressed("jump")) {
 //					yVel -= jumpEnergy;
 					vel.y -= jumpEnergy;
+					vel.x += jumpEnergy * 0.25;
 					jumpCounter = jumpTime;
 				} else {
 					jumpCounter -= FP.elapsed;
@@ -48,13 +49,17 @@ package
 					}
 				}
 			}
+			if (Input.pressed(Key.R)) {
+				(world as GameWorld).playerDied();
+			}
 			speed += (targetSpeed - speed) * 0.1;
+			vel.x = speed * FP.elapsed;
 			topSpeed += 0.2;
 			bottomSpeed += 0.1;
 			super.update();
 		}
 		override public function checkBounds():void {
-			if (x < -32 || y < -FP.screen.height || x > FP.screen.width+32 || y > FP.screen.height) {				
+			if (x < world.camera.x-32 || y < world.camera.y-FP.screen.height || x > world.camera.x+FP.screen.width+32 || y > world.camera.y+FP.screen.height) {				
 				(world as GameWorld).playerDied();
 
 			}

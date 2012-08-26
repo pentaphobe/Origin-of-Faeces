@@ -60,7 +60,7 @@ package
 		public function drawColumn(x:Number, w:Number):void {
 			var h:int = lastHeight;
 			var edgeType:int = 0;
-			if (runLength < 12 && Math.random() < 0.9) {
+			if (runLength < 12 && Math.random() < 0.95) {
 				runLength += 1;
 			} else if (Math.random() < 0.5 && h < theMap.rows - 3) {
 				// go up a tile
