@@ -17,6 +17,7 @@ package
 		[Embed(source = "assets/tree.png")] public static const TREE:Class;
 		[Embed(source = "assets/ape_sheet.png")] public static const PLAYER:Class;
 		[Embed(source = "assets/sky.png")] public static const SKY:Class;
+		[Embed(source = "assets/ape profile.png")] public static const APE_PROFILE:Class;
 		
 		public static var friction:Vec2 = new Vec2(0.65, 0.85);
 		public static var gravity:Number = 1.0;
@@ -34,8 +35,10 @@ package
 		
 		public function GameWorld()
 		{			
-			super();
-			newGame();		
+			super();					
+		}
+		override public function begin():void {
+			newGame();
 		}
 		public function playerDied():void {
 			trace("Game Over");			
@@ -80,7 +83,9 @@ package
 		}
 		override public function update():void {	
 			updateBuildings();
-			HUD.distanceRun += player.speed * FP.elapsed;
+			if (player.vel.x != 0) {
+				HUD.distanceRun += player.vel.x;
+			}
 //			tileWorld.scrollRight(player.speed * FP.elapsed);			
 //			bg.scrollRight(player.speed * FP.elapsed);
 			

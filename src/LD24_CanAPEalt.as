@@ -18,7 +18,7 @@ package
 			super(480, 240, 60, false);
 			scaleX = 2;
 			scaleY = 2;
-			FP.console.enable();
+//			FP.console.enable();
 		}
 		
 		override public function init():void {

@@ -30,8 +30,8 @@ package
 		
 		public var swingVel:Number = 0;
 		public var swingDist:Number;
-		public var minArmLength:Number = 16;
-		public var idealArmLength:Number = 32;
+		public var minArmLength:Number = 48;
+		public var idealArmLength:Number = 96;
 		public var maxArmLength:Number = 128;
 		
 		public var itemMagnetStrength:Number = 30.0;
@@ -43,7 +43,7 @@ package
 			spriteMap = new Spritemap(GameWorld.PLAYER, 32, 32);
 			spriteMap.add("stand_right", [0], 0);
 			spriteMap.add("stand_left", [8], 0);
-			spriteMap.add("run_right", [0, 1, 0, 2], 10);
+			spriteMap.add("run_right", [1, 0, 2, 0], 10);
 			spriteMap.add("run_left", [8], 10);
 			spriteMap.add("jump_right", [16], 10);
 			spriteMap.add("jump_left", [24], 10);
@@ -139,6 +139,10 @@ package
 							swingVel = vel.x * Math.sin(ang) + vel.y * -Math.cos(ang);					
 							if (swinger != null && swingDist < maxArmLength) {
 								swinging = true;	
+								if (swingDist < minArmLength) {
+									x = swinger.x + Math.cos(ang) * minArmLength;
+									y = swinger.y + Math.sin(ang) * minArmLength;
+								}
 								trace("started swinging with velocity: " + swingVel);
 							}
 	//					}
@@ -182,7 +186,6 @@ package
 				 // update swingy stuff
 				var dx:Number = x - swinger.centerX;
 				var dy:Number = y - swinger.centerY;
-				var dist:Number = Math.sqrt(dx*dx + dy*dy);
 				var ang:Number = Math.atan2(dy, dx) * 180 / Math.PI;				 
 				 if (ang > 90 && ang < 180) {
 					 swingVel += 0.3 * ( (ang-90) / 90 );
@@ -195,12 +198,12 @@ package
 				 
 				 if (ang > -90 && ang < 0) {
 //					 swingVel *= 0.9;
-					 swingVel -= 0.1;
+					 swingVel -= 0.3;
 					 trace("NE");
 				 }
 				 if (ang < -90) {
 //					 swingVel *= 0.9;
-					 swingVel += 0.1;
+					 swingVel += 0.3;
 					 trace("NW");
 				 }
 				 
@@ -215,17 +218,34 @@ package
 				 acc.y = (newY - y) * 4.0 - jumpEnergy;
 				 x = newX;
 				 y = newY;
-//				 if (dist < idealArmLength) {
+
+				 // [@todo fix this part - it's supposed to keep the arm within a reasonable length range]
+//				 dx = x - swinger.centerX;
+//				 dy = y - swinger.centerY;
+//				 var dist:Number = Math.sqrt(dx*dx + dy*dy);
+//				 ang = Math.atan2(dy, dx);
+//				 newX = Math.cos(ang) * idealArmLength;
+//				 newY = Math.sin(ang) * idealArmLength;
+//
+//				 if (dist < minArmLength) {
 //					 trace("dist:" + dist + ", x,y:" + x + ", " + y);
-//					 if (dist <= 2) {
-//						 x += vel.x;
-//						 y += vel.y;
-//					 }
-//					 x *= 1.1 * FP.elapsed;
-//					 y *= 1.1 * FP.elapsed;
+////					 if (dist <= 2) {
+////						 x += vel.x;
+////						 y += vel.y;
+////					 }
+////					 x *= 1.1 * FP.elapsed;
+////					 y *= 1.1 * FP.elapsed;
+//					 
+////					 x -= (newX - x) *  FP.elapsed;
+////					 y -= (newY - y) *  FP.elapsed;
+//					 
+//					 
 //				 } else if (dist > idealArmLength) {
-//					 x *= 0.9 * FP.elapsed;
-//					 y *= 0.9 * FP.elapsed;
+////					 x *= 0.9 * FP.elapsed;
+////					 y *= 0.9 * FP.elapsed;
+//					 x += (newX - x) *  FP.elapsed;
+//					 y += (newY - y) *  FP.elapsed;
+//					 
 //				 }
 				 x += swinger.centerX;
 				 y += swinger.centerY;
