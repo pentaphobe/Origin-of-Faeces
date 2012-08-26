@@ -10,8 +10,10 @@ package
 	{
 		[Embed(source = "assets/tiles.png")] public static const TILES:Class;
 		[Embed(source = "assets/brain.png")] public static const BRAIN:Class;
-		public static var friction:Number = 0.65;
-		public static var gravity:Number = 4.0;
+		[Embed(source = "assets/tree.png")] public static const TREE:Class;
+		
+		public static var friction:Vec2 = new Vec2(0.65, 0.85);
+		public static var gravity:Number = 1.0;
 		
 		public var tileWorld:TileWorld;
 		public var bg:TileWorld;
@@ -40,7 +42,7 @@ package
 //			bg.layer = 3;			
 //			add(bg);
 			
-			player = new Player(FP.screen.width / 2, 5);
+			player = new Player(FP.width / 6, 5);
 			add(player);
 			
 			hud = new HUD;
@@ -76,9 +78,9 @@ package
 			if (Math.abs(idealCameraY - camera.y) > FP.screen.height / 4) {
 				camera.y += (idealCameraY - camera.y) * 4 * FP.elapsed;
 			}
-//			if (Math.abs(idealCameraX - camera.x) > FP.screen.height / 8) {
-				camera.x += (idealCameraX - camera.x) * 16 * FP.elapsed;
-//			}
+			if (Math.abs(idealCameraX - camera.x) > FP.screen.height / 8) {
+				camera.x += (idealCameraX - camera.x) * 4 * FP.elapsed;
+			}
 //			camera.x = idealCameraX;
 //			camera.y = idealCameraY;
 			super.update();
@@ -103,6 +105,17 @@ package
 					y += Building.TILE_SIZE;
 				}
 
+			}
+		}
+		public function addSwingers(building:Building) {
+			var x:Number = 0;
+			while (x < building.width) {
+				if (Math.random() < 0.2) {
+					var swinger:Swinger = new Swinger(building.x + x, building.y, new Image(TREE));
+					building.items.push(swinger);
+					add(swinger);
+				}
+				x += 16;
 			}
 		}
 		public function spawnBuilding() {
@@ -138,6 +151,7 @@ package
 			var newBuilding:Building = new Building([1,3,2,4], wid, hei, newX);
 			buildings.push(newBuilding);
 			lastBuilding = newBuilding;
+			addSwingers(newBuilding);
 			addItems(newBuilding);
 			
 

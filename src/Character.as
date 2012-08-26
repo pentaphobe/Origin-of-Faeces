@@ -1,9 +1,9 @@
 package 
 {	
 	import net.flashpunk.Entity;
+	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
-	import net.flashpunk.FP;
 	/*
 	 * A character in the game
 	 *
@@ -12,19 +12,24 @@ package
 	{
 		public var vel:Vec2 = new Vec2(0, 0);
 		public var acc:Vec2 = new Vec2(0, 0);
+		public var maxSpeed:Vec2 = new Vec2(3, 3);
 		
 		public var mass:Number = 0.5;
 		
 		public var onGround:Boolean = false;
-		public var friction:Number = GameWorld.friction;
+		public var friction:Vec2 = GameWorld.friction;
 		public function Character(x:Number=0, y:Number=0, graphic:Graphic=null, mask:Mask=null)
 		{
 			super(x, y, graphic, mask);
 		}
 		override public function update():void {
-			vel.multS(friction);
+			if (onGround) {
+				vel.x *= friction.x;
+			} else {
+				vel.x *= friction.y;
+				vel.y *= friction.y;
+			}
 			vel.add(acc);
-			
 //			x += vel.x;
 //			y += vel.y;
 			checkCollision();
@@ -65,7 +70,7 @@ package
 				}
 			}
 			if (collided) {
-				vel.multS(-friction);
+				vel.multXY(-friction.x, -friction.y);
 			}
 			onGround = collided;			
 		}

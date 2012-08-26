@@ -3,6 +3,7 @@ package
 	import net.flashpunk.Entity;
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
+	import net.flashpunk.FP;
 	
 	public class Pickup extends Entity
 	{
@@ -18,6 +19,18 @@ package
 			if (play != null) {
 				// collision, do pickup
 				doPickup();
+			} else {
+				var wrld:GameWorld = world as GameWorld;
+				var player:Player = wrld.player;
+				var dx:Number = player.x - x;
+				var dy:Number = player.y - y;
+				var dist:Number = Math.sqrt(dx*dx + dy*dy);
+				if (dist < player.itemMagnetRange) {
+					dist /= player.itemMagnetRange;
+					dist = 1.0 - dist;
+					x += dx * dist * player.itemMagnetStrength * FP.elapsed;
+					y += dy * dist * player.itemMagnetStrength * FP.elapsed;
+				}
 			}
 			super.update();
 		}
