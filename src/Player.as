@@ -112,10 +112,15 @@ package
 			var walked:Boolean = false;
 			
 			// "cheat" key for testing along long distances
-			if (Input.pressed(Key.S)) {
+			if (Input.pressed(Key.RIGHT_SQUARE_BRACKET)) {
 				speed *= 3;
 				HUD.pickups["brain"] = 49;
 			}
+			if (Input.pressed(Key.LEFT_SQUARE_BRACKET)) {
+				trace("Player died because they reset");
+				(world as GameWorld).playerDied();
+			}
+			
 			
 			if (Input.check("left")) { 
 //				targetSpeed = bottomSpeed;
@@ -224,27 +229,28 @@ package
 				}
 				swinging = false;
 			}
-			if (Input.pressed(Key.R)) {
-				trace("Player died because they reset");
-				(world as GameWorld).playerDied();
-			}
 			
 			// this is leftover from when it was a canabalt-alike. I wouldn't have approached it this way if I'd started
 			// in more platformer-y territory, but it was in by the end and no time to change it everywhere.
 //			topSpeed += 0.2;
 //			bottomSpeed += 0.1;			
 			
-			// interpolate turned out feeling wrong
-			//speed += (targetSpeed - speed) * 0.1;
-			
-			// so I went for linear
-			if (speed < targetSpeed) {
-				speed += 0.1;
-			} else {
-				speed -= 0.1;
-			}
 			footStepCountdown -= FP.elapsed;
 			if (!swinging) {
+				// interpolate turned out feeling wrong
+				//speed += (targetSpeed - speed) * 0.1;
+				
+				// so I went for linear
+				if (speed < targetSpeed) {
+					speed += 0.05;
+				} else {
+					speed -= 0.05;
+				}
+				
+				if (Math.max(Math.abs(vel.y), Math.abs(vel.x)) < 5.0) {
+					targetSpeed *= 0.8;
+				}
+				
 //				vel.x += speed * FP.elapsed;
 				if (onGround) {		
 					if (walked) {
@@ -262,7 +268,7 @@ package
 				super.update();
 				if (onGround && !wasOnGround) {
 					emit("dustCloudBig", x, y + height / 2, 30);
-					Assets.landingSound.play(0.5);
+					Assets.landingSound.play(1.3);
 				}
 			} else {			
 				 // update swingy stuff

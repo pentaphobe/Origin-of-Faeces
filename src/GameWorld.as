@@ -36,6 +36,7 @@ package
 		
 		public function GameWorld()
 		{			
+			isPaused = true;
 			super();			
 			Input.define("left", Key.LEFT);
 			Input.define("right", Key.RIGHT);
@@ -50,7 +51,7 @@ package
 			
 			for (var i:int=0;i<2;i++) {
 				var par:Entity = new Entity(0, 0, new Backdrop(Assets.MOUNTAINS, true, false));
-				par.width = FP.screen.width * 3;				
+				par.width = 2048;				
 				par.y += i * 10;
 				par.x += i * 30;
 				(par.graphic as Backdrop).color = (0x40 << 16) >> i | (0x44 << 8) >> i | (0x4);
@@ -63,13 +64,16 @@ package
 			
 			newGame();
 		}
+		override public function end():void {
+			removeAll();
+		}
 		public function playerDied():void {
 			trace("Game Over");	
 			FP.world = new DeathWorld;
 //			newGame();
 		}
 		public function newGame():void {			
-			removeAll();
+			trace("newGame()");
 //			tileWorld = new TileWorld();
 //			add(tileWorld);
 //			bg = new TileWorld(24, false, 0.3, 13);
@@ -106,6 +110,7 @@ package
 			camera.x = player.x - FP.screen.width / 2;
 			camera.y = player.y - FP.screen.height / 2;
 			
+			isPaused = false;
 		}
 		public function updateBuildings():void {
 			while (lastBuilding == null || entityOnScreen(lastBuilding) || player.x > lastBuilding.x) {
@@ -148,15 +153,20 @@ package
 //			camera.x = idealCameraX;
 //			camera.y = idealCameraY;
 			
-			sky.y = camera.y-(sky.height*1.4) - camera.y*0.35;
+			sky.y = camera.y-(sky.height*1.4) - camera.y*0.25;
 			sky.x = camera.x + FP.screen.width / 2;
 			
 			for (var i:int=0;i<parallax.length;i++) {
 				var ent:Entity = parallax[i] as Entity;
-				var para:Number = ((1-i) / 24.0);
+				// [@todo the 12 here was just lazy hard-coding]
+				var para:Number = (i / 12.0);
 //				ent.x = (camera.x * 0.99 * para) + FP.screen.width / 2 + (i * 327);
-				ent.y = (camera.y * 0.9) - (FP.screen.height) - camera.y*0.4 + i*16;
-				ent.x = (camera.x % 1024) * -0.05 * para + (i * 327);
+				//ent.y = (camera.y * 0.9) - (FP.screen.height) - camera.y*0.4 + i*16;
+				
+//				ent.y = (camera.y * para * 0.3) - (FP.screen.height * 2);
+//				ent.y = (camera.y - FP.screen.height / 2) - (camera.y * para * 0.3);
+				ent.y = camera.y - (camera.y * para * 0.3);
+				ent.x = ((camera.x * para) % ent.width);
 				
 			}
 			super.update();
@@ -261,7 +271,7 @@ package
 				this.recycle(oldBuilding);
 				++removedTotal;
 			}	
-			trace("total removed:" + removedTotal);
+			//trace("total removed:" + removedTotal);
 		}
 		public function doPickup(src:Entity):void {
 			player.emit("sparkle", src.x, src.y, 40);
