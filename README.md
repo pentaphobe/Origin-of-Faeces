@@ -1,6 +1,6 @@
 ## The Origin of Faeces ##
 
-A game made in 23 hours for the (24th Ludum Dare)[http://www.ludumdare.com/compo/ludum-dare-24/] 48hr game creation jam.
+A game made in 23 hours for the [24th Ludum Dare](http://www.ludumdare.com/compo/ludum-dare-24/) 48hr game creation jam.
 
 It is a little glitchy at times, but it's worth noting I spent the last few hours before submission occasionally nodding off at my keyboard.  I'll be intermittently pushing changes as I go through and fix a few bugs and get it up to where I'd hoped it to be.
 
@@ -17,5 +17,5 @@ Let's say it's a Creative Commons Attribution License, and that Attribution coul
 ### Thanks ###
 
 To everyone who participated in and (particularly) created Ludum Dare.
-Thanks to (Chevy Ray)[http://chevyray.com/] for making the (FlashPunk)[http://flashpunk.net/]  framework that I could pick up in an unfamiliar language an hour or two before entering!
+Thanks to [Chevy Ray](http://chevyray.com/) for making the [FlashPunk](http://flashpunk.net/)  framework that I could pick up in an unfamiliar language an hour or two before entering!
 
