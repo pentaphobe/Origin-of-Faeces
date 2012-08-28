@@ -242,9 +242,9 @@ package
 				
 				// so I went for linear
 				if (speed < targetSpeed) {
-					speed += 0.05;
+					speed += 0.07;
 				} else {
-					speed -= 0.05;
+					speed -= 0.07;
 				}
 				
 				if (Math.max(Math.abs(vel.y), Math.abs(vel.x)) < 5.0) {
@@ -306,6 +306,9 @@ package
 				 // I'm just updating the normal acceleration every frame here - should be a flag and "exit" procedure
 				 acc.x = (newX - x) * 2 * jumpEnergy * 0.25;			
 				 acc.y = (newY - y) * 2 * jumpEnergy * 0.25;
+				 
+				 // add the x component of our movement to the distance travelled
+				 HUD.distanceRun += newX - x;
 				 
 				 x = newX;
 				 y = newY;

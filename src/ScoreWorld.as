@@ -36,26 +36,38 @@ package
 		public function ScoreWorld()
 		{
 			super();
-			textInput = new TextBox("your name:", this.nameCallback,0, 0);
-			scoresFile = SharedObject.getLocal("leaderBoard");	
-			scoresFile.clear();
-//			scoreTexts = new Graphiclist();
-//			for (var i:int=0;i<10;i++) {
-//				scoreTexts.add(new Text("", 10, i * 16));
-//			}
-//			add(new Entity(0, 0, scoreTexts));
-			var titleBox:Entity = add(new Entity(FP.screen.width / 2 - title.width / 2, -5, title));
-			add(new Entity(titleBox.x + 18, 65, scoreText));			
-			add(textInput);
+
 		}
 		override public function begin():void {
+			textInput = new TextBox("your name:", this.nameCallback,0, 0);
+			scoresFile = SharedObject.getLocal("leaderBoard");	
+			
+			// for testing purposes
+//			scoresFile.clear();
+			
+			//			scoreTexts = new Graphiclist();
+			//			for (var i:int=0;i<10;i++) {
+			//				scoreTexts.add(new Text("", 10, i * 16));
+			//			}
+			//			add(new Entity(0, 0, scoreTexts));
+			var titleBox:Entity = add(new Entity(FP.screen.width / 2 - title.width / 2, -5, title));
+			add(new Entity(titleBox.x + 18, 65, scoreText));
 			updateScores();
+			
+			var lowestScore:Number = leaderBoard[leaderBoard.length-1].combined || 0;
+			if (calculateCombined(HUD.distanceRun / 16.0, HUD.pickups['brains'] || 0) > lowestScore) {
+				add(textInput);	
+			} else {
+				gotName = true;
+			}
+			
+			
 			super.begin();
 		}
 		override public function update():void {
 			super.update();
 			if (!gotName) return;
-			if (Input.pressed(Key.SPACE)) {
+			if (Input.pressed(Key.SPACE) || Input.pressed(Key.ESCAPE)) {
 				FP.world = new MenuWorld;
 			}
 		}
@@ -72,6 +84,8 @@ package
 				// calculate the combined score for the default set
 				updateCombined();
 			}
+			leaderBoard.sortOn("combined", Array.NUMERIC | Array.DESCENDING);
+			
 			showScores();
 
 		}
@@ -80,7 +94,6 @@ package
 			var hearts:Number = HUD.pickups['brains'] || 0;
 			var combined:Number = calculateCombined(HUD.distanceRun / 16.0, hearts);
 			var entry:Object = {name:name, distance:distance, hearts:hearts, combined:combined};
-			leaderBoard.sortOn("combined", Array.NUMERIC | Array.DESCENDING);
 			for (var i in leaderBoard) {
 				if (distance > leaderBoard[i].distance) {
 					leaderBoard.splice(i, 0, entry);

@@ -27,3 +27,5 @@ This version is not for rating - merely for my own sense of completion :)
 	- fixed the real underlying issue, but left this in as a reminder to add a scoreboard
  - screwed up with the github gui and committed all of these changes under a single file's description :|
  - added a scoreboard
+ - tweaked the rate at which running speeds up
+ - made swinging affect distance again (but properly this time)
