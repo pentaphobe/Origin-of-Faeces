@@ -18,6 +18,7 @@ package
 		[Embed(source = "assets/particle_leaf_anim.png")] public static const PARTICLE_LEAF:Class;
 		
 		[Embed(source = "assets/hint bg.png")] public static const HINT_BG:Class;
+		[Embed(source = "assets/highscore.png")] public static const HIGHSCORE:Class;
 		
 		[Embed(source = "assets/death scene.png")] public static const SCENE_DEATH:Class;
 		[Embed(source = "assets/title screen.png")] public static const SCENE_MENU:Class;

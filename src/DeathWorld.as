@@ -27,7 +27,7 @@ package
 							"and grabbed " + HUD.pickups["brain"] + " brains\n\n" +
 							"(press <SPACE> to try again)";
 			if (--safetyCountdown <= 0 && (Input.pressed(Key.SPACE) || Input.mousePressed)) {
-				FP.world = new MenuWorld;
+				FP.world = new ScoreWorld;
 			}
 			super.update();			
 		}
