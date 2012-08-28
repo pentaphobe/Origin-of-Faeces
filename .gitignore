@@ -1,0 +1,5 @@
+bin-debug/*
+bin-release/*
+
+# osx files
+.DS_Store

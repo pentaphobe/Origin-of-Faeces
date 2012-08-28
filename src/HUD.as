@@ -18,6 +18,7 @@ package
 		private var pausedText:Text = new Text(">> PAUSED <<", 10, 60);
 		private var hintBackground:Image = new Image(Assets.HINT_BG);
 		private var profileImage:Image = new Image(Assets.APE_PROFILE);
+		public static var HIGH_BRAIN_DISTANCE:Number = 300 * 16;
 		public static var distanceRun:Number = 0;
 		public static var pickups:Object = {};
 		public static var hints:Array = [
@@ -40,7 +41,7 @@ package
 			profileImage.x = 10;
 			profileImage.y = FP.screen.height - profileImage.height + 1;
 			hintText.x = 80;
-			hintText.y = FP.screen.height - hintText.height;
+			hintText.y = FP.screen.height - hintText.height + 16;
 			hintText.color = 0x272727;
 			hintBackground.x = hintText.x - 10;
 			hintBackground.y = hintText.y - 10;

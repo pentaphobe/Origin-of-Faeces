@@ -298,8 +298,8 @@ package
 				 var newY:Number = x * s + y * c;
 				 
 				 // I'm just updating the normal acceleration every frame here - should be a flag and "exit" procedure
-				 acc.x = (newX - x) * speed * jumpEnergy;			
-				 acc.y = (newY - y) * speed * jumpEnergy;
+				 acc.x = (newX - x) * 2 * jumpEnergy * 0.25;			
+				 acc.y = (newY - y) * 2 * jumpEnergy * 0.25;
 				 
 				 x = newX;
 				 y = newY;

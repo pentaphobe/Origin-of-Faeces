@@ -12,7 +12,7 @@ package
 	{
 		public var vel:Vec2 = new Vec2(0, 0);
 		public var acc:Vec2 = new Vec2(0, 0);
-		public var maxSpeed:Vec2 = new Vec2(15, 15);
+		public var maxSpeed:Vec2 = new Vec2(75, 75);
 		
 		public var mass:Number = 0.75;
 		

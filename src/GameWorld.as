@@ -108,7 +108,7 @@ package
 			
 		}
 		public function updateBuildings():void {
-			while (lastBuilding == null || entityOnScreen(lastBuilding)) {
+			while (lastBuilding == null || entityOnScreen(lastBuilding) || player.x > lastBuilding.x) {
 				spawnBuilding();
 			}
 		}
@@ -171,10 +171,18 @@ package
 			var y:Number = Math.random()*50 + 20;
 
 			for (var i:Number = 0; i < building.tileWidth; i++) {	
+				// create ground level items
 				if (Math.random() < 0.1) {
 					var newItem:Pickup = new Pickup("brain", x, building.y - y, new Image(Assets.BRAIN));
 					building.items.push(newItem);	
 					add(newItem);
+				}
+				// create sky items
+				if (HUD.distanceRun > HUD.HIGH_BRAIN_DISTANCE && Math.random() < 0.2) {
+					var topScale:Number = Math.min( HUD.distanceRun - HUD.HIGH_BRAIN_DISTANCE, 10 * 16 );
+					var newItem:Pickup = new Pickup("brain", x, building.y - (8 * 16) - (Math.random()*topScale), new Image(Assets.BRAIN));
+					building.items.push(newItem);	
+					add(newItem);					
 				}
 				x += Building.TILE_SIZE;
 				if (Math.random() < 0.5 && y > Building.TILE_SIZE) {
