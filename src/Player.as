@@ -16,6 +16,10 @@ package
 	
 	public class Player extends Physics
 	{
+		// abilities
+		public var hasDoubleJump:Boolean = false;
+		public var hasFloat:Boolean = false;
+		
 		public var topSpeed:Number = 200.0;
 		public var bottomSpeed:Number = 10.0;
 		public var targetSpeed:Number = 5.0;
@@ -24,6 +28,9 @@ package
 		public var jumpTime:Number = 0.2;
 		public var jumpCounter:Number;
 		public var canDoubleJump:Boolean;
+		
+		public var footStepCountdown:Number = 0;
+		public var footStepInterval:Number = 0.2;
 		
 		
 		public var facingRight:Boolean = true;
@@ -39,7 +46,7 @@ package
 		public var idealArmLength:Number = 96;
 		public var maxArmLength:Number = 128;
 		
-		public var itemMagnetStrength:Number = 30.0;
+		public var itemMagnetStrength:Number = 40.0;
 		public var itemMagnetRange:Number = 40.0;
 		public var spriteMap:Spritemap;
 		public var armGraphic:Image = new Image(Assets.APE_ARM);
@@ -96,7 +103,10 @@ package
 		}
 		override public function update():void {
 			var walked:Boolean = false;
-			
+			if (Input.pressed(Key.S)) {
+				speed *= 3;
+				HUD.pickups["brain"] = 49;
+			}
 			if (Input.check("left")) { 
 //				targetSpeed = bottomSpeed;
 				if (swinging) {
@@ -132,7 +142,7 @@ package
 			}
 			friction = GameWorld.friction;
 			if (Input.check("jump")) {
-				if (Input.pressed("jump") && (onGround || canDoubleJump)) {
+				if (Input.pressed("jump") && (onGround || (hasDoubleJump && canDoubleJump))) {
 //					yVel -= jumpEnergy;
 					acc.y -= jumpEnergy;
 //					vel.x += jumpEnergy * 0.25;
@@ -141,14 +151,18 @@ package
 						canDoubleJump = true;
 						emit("dustCloudBig", x, y + height / 2, 10);
 						Assets.jumpSound.play(0.1);
-					} else {
+						Assets.landingSound.play(0.8);
+					} else {						
 						canDoubleJump = false;
 						Assets.jumpSound.play(0.1);
 						vel.y = 0;
 					}
 				} else {
 					jumpCounter -= FP.elapsed;
-					if (jumpCounter > 0 && vel.y < 0) {					
+					if (hasFloat) {
+						vel.y -= GameWorld.gravity * 0.35;
+					} 
+					if ((jumpCounter > 0 && vel.y < 0)) {					
 //						yVel -= jumpEnergy * 0.5;
 //						vel.y -= jumpEnergy * 0.75;
 						var jumpAmount:Number = (jumpCounter / jumpTime);
@@ -179,7 +193,7 @@ package
 									x = swinger.x + Math.cos(ang) * minArmLength;
 									y = swinger.y + Math.sin(ang) * minArmLength;
 								}
-								trace("started swinging with velocity: " + swingVel);
+//								trace("started swinging with velocity: " + swingVel);
 							}
 							swinger.emit("leaves", swinger.x  + 16, swinger.y + 16, Math.random()*20+3);
 	//					}
@@ -191,7 +205,7 @@ package
 			} else {
 				if (Input.released("swing") && swinging) {
 					// convert from swing velocity to normal
-					trace("stopping swinging");
+//					trace("stopping swinging");
 				}
 				swinging = false;
 			}
@@ -206,13 +220,16 @@ package
 			} else {
 				speed -= 0.1;
 			}
-			
+			footStepCountdown -= FP.elapsed;
 			if (!swinging) {
 //				vel.x += speed * FP.elapsed;
 				if (onGround) {		
 					if (walked) {
-						spriteMap.play( vel.x < 0 ? "run_left" : "run_right");
-						Assets.footStepSound.play(0.05);
+						spriteMap.play( vel.x < 0 ? "run_left" : "run_right");						
+						if (footStepCountdown < 0) {
+							Assets.footStepSound.play(0.08);
+							footStepCountdown = footStepInterval;
+						}
 					} else {
 						spriteMap.play( facingRight ? "stand_right" : "stand_left");
 					}
@@ -231,22 +248,22 @@ package
 				var ang:Number = Math.atan2(dy, dx) * 180 / Math.PI;				 
 				 if (ang > 90 && ang < 180) {
 					 swingVel += 0.3 * ( (ang-90) / 90 );
-					 trace("SW");
+//					 trace("SW");
 				 }
 				 if (ang < 90 && ang > 0) {
 					 swingVel -= 0.3 * (1.0 - (ang / 90));
-					 trace("SE");
+//					 trace("SE");
 				 }
 				 
 				 if (ang > -90 && ang < 0) {
 //					 swingVel *= 0.9;
 					 swingVel -= 0.3;
-					 trace("NE");
+//					 trace("NE");
 				 }
 				 if (ang < -90) {
 //					 swingVel *= 0.9;
 					 swingVel += 0.3;
-					 trace("NW");
+//					 trace("NW");
 				 }
 				 
 				 var swingAmount:Number = -swingVel * FP.elapsed;

@@ -15,20 +15,24 @@ package
 	{
 
 		
-		public static var friction:Vec2 = new Vec2(0.65, 0.85);
+		public static var friction:Vec2 = new Vec2(0.75, 0.85);
 		public static var gravity:Number = 1.0;
+		public var isPaused:Boolean = false;
 		
 		public var tileWorld:TileWorld;
 		public var bg:TileWorld;
 		public var sky:Entity;
 		public var parallax:Array = [];
-		public var player:Player;
+		public static var player:Player;
 		public var hud:HUD;
 		public var buildings:Array = [];
 		public var lastBuilding:Building;
+		public var hazardSystem:HazardSystem;
 		
 		public var scrollSpeed:Number = 100.0;
 		public var topSpeed:Number = 300.0;
+		
+		public static var leftX:Number = 0;
 		
 		public function GameWorld()
 		{			
@@ -40,7 +44,8 @@ package
 			Input.define("right", Key.RIGHT);
 			Input.define("jump", Key.Z, Key.UP);
 			Input.define("swing", Key.X);
-			Input.define("start", Key.Z, Key.SPACE);	
+			Input.define("start", Key.Z, Key.SPACE);
+			Input.define("pause", Key.ESCAPE, Key.P);
 			
 			for (var i:int=0;i<2;i++) {
 				var par:Entity = new Entity(0, 0, new Backdrop(Assets.MOUNTAINS, true, false));
@@ -58,8 +63,9 @@ package
 			newGame();
 		}
 		public function playerDied():void {
-			trace("Game Over");			
-			newGame();
+			trace("Game Over");	
+			FP.world = new DeathWorld;
+//			newGame();
 		}
 		public function newGame():void {			
 			removeAll();
@@ -85,10 +91,12 @@ package
 			lastBuilding = null;
 			buildings = [];
 			updateBuildings();
-			player.x = lastBuilding.x;
-			player.y = lastBuilding.y - 20;
+			player.x = buildings[0].x + 14 * Building.TILE_SIZE;
+			player.y = buildings[0].y - 20;
 			
-			
+			hazardSystem = new HazardSystem();
+			hazardSystem.addType(new Hazard("hand_of_god", 0, 0, Image.createRect(64, 128)) );
+			add(hazardSystem);
 			
 			
 			trace("yup. it's wood.");
@@ -105,6 +113,11 @@ package
 			return e.collideRect(e.x, e.y, camera.x - margin, camera.y - margin, FP.screen.width + (2*margin), FP.screen.height + (2*margin));
 		}
 		override public function update():void {	
+			if (Input.pressed("pause")) {
+				isPaused = !isPaused;
+			}
+			if (isPaused) return;
+			
 			updateBuildings();
 			if (player.vel.x != 0) {
 				HUD.distanceRun += player.vel.x;
@@ -113,13 +126,14 @@ package
 //			bg.scrollRight(player.speed * FP.elapsed);
 			
 			var idealCameraY:Number = player.y - FP.screen.height/2;
-			var idealCameraX:Number = player.x - FP.screen.width/4;
+			var idealCameraX:Number = Math.max(leftX, player.x - FP.screen.width/4);
 			if (Math.abs(idealCameraY - camera.y) > FP.screen.height / 8) {
 				camera.y += (idealCameraY - camera.y) * 8 * FP.elapsed;
 			}
 			if (Math.abs(idealCameraX - camera.x) > FP.screen.height / 8) {
 				camera.x += (idealCameraX - camera.x) * 4 * FP.elapsed;
 			}
+			leftX = camera.x;
 //			camera.x = idealCameraX;
 //			camera.y = idealCameraY;
 			
@@ -171,6 +185,7 @@ package
 			}
 		}
 		public function spawnBuilding() {
+			var makeItems:Boolean = true;
 			var newX:Number = 0;
 			var wid:Number = Math.random() * 20 + 12;
 			var hei:Number = 40;
@@ -179,7 +194,8 @@ package
 				newX = lastBuilding.x + lastBuilding.width;
 				hei = lastBuilding.tileHeight;
 			} else {
-				wid += 40;
+				wid += 140;
+				makeItems = false;
 				// first building is extra wide				
 				
 			}
@@ -191,7 +207,10 @@ package
 			}
 			if (lastBuilding != null && Math.random() < 0.1) {
 				// create a gap
-				var gapWidth:Number = (Math.random() * (player.speed / Building.TILE_SIZE) + 1) * Building.TILE_SIZE;
+				var gapWidth:Number = (Math.random() * ((player.speed * 0.3) / Building.TILE_SIZE) + 1) * Building.TILE_SIZE;
+				if (gapWidth < 2) {
+					gapWidth = 2;
+				}
 				newX += gapWidth;
 				if (hei - lastBuilding.tileHeight > gapWidth) {
 					hei = lastBuilding.tileHeight - gapWidth;
@@ -204,7 +223,9 @@ package
 			buildings.push(newBuilding);
 			lastBuilding = newBuilding;
 			addSwingers(newBuilding);
-			addItems(newBuilding);
+			if (makeItems) {
+				addItems(newBuilding);
+			}
 			
 			cullBuildings();
 
@@ -223,7 +244,8 @@ package
 			trace("total removed:" + removedTotal);
 		}
 		public function doPickup(src:Entity):void {
-			player.emit("sparkle", src.x, src.y, 10);
+			player.emit("sparkle", src.x, src.y, 40);
+			Assets.brainGrabSound.play(0.3);
 			recycle(src);
 		}
 	}

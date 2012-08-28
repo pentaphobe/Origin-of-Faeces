@@ -20,8 +20,7 @@ package
 				// collision, do pickup
 				doPickup();
 			} else {
-				var wrld:GameWorld = world as GameWorld;
-				var player:Player = wrld.player;
+				var player:Player = GameWorld.player;
 				var dx:Number = player.x - x;
 				var dy:Number = player.y - y;
 				var dist:Number = Math.sqrt(dx*dx + dy*dy);

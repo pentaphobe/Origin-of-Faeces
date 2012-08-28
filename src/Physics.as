@@ -12,7 +12,7 @@ package
 	{
 		public var vel:Vec2 = new Vec2(0, 0);
 		public var acc:Vec2 = new Vec2(0, 0);
-		public var maxSpeed:Vec2 = new Vec2(3, 3);
+		public var maxSpeed:Vec2 = new Vec2(15, 15);
 		
 		public var mass:Number = 0.5;
 		
@@ -34,6 +34,13 @@ package
 				vel.y *= friction.y;
 			}
 			vel.add(acc);
+			
+			if (Math.abs(vel.x) > maxSpeed.x) {
+				vel.x = FP.sign(vel.x) * maxSpeed.x;
+			}
+			if (Math.abs(vel.y) > maxSpeed.y) {
+				vel.y = FP.sign(vel.y) * maxSpeed.y;				
+			}
 //			x += vel.x;
 //			y += vel.y;
 			checkCollision();
@@ -58,7 +65,10 @@ package
 			}			
 		}
 		public function move():void {
-			moveBy(vel.x, vel.y, "solid", true);
+			if (x <= GameWorld.leftX && vel.x < 0) {
+				vel.x = 0;
+			}
+			moveBy(vel.x, vel.y, "solid", true);			
 		}
 		public function fall():void {
 			vel.y += GameWorld.gravity * mass;

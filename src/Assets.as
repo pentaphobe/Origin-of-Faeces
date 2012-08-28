@@ -17,6 +17,10 @@ package
 		[Embed(source = "assets/particle_dust.png")] public static const PARTICLE_DUST:Class;
 		[Embed(source = "assets/particle_leaf_anim.png")] public static const PARTICLE_LEAF:Class;
 		
+		[Embed(source = "assets/hint bg.png")] public static const HINT_BG:Class;
+		
+		[Embed(source = "assets/death scene.png")] public static const SCENE_DEATH:Class;
+		[Embed(source = "assets/title screen.png")] public static const SCENE_MENU:Class;
 		
 		
 		[Embed(source = "assets/audio/step-00.mp3")] public static const SND_STEP_00:Class;
@@ -50,7 +54,14 @@ package
 		[Embed(source = "assets/audio/landing-03.mp3")] public static const SND_LAND_03:Class;
 		public static var landingResources:Array = [SND_LAND_00,SND_LAND_01, SND_LAND_02, SND_LAND_03];
 		public static var landingSound:MultiSound = new MultiSound(landingResources);
-		
+
+		[Embed(source = "assets/audio/brain_grab-00.mp3")] public static const SND_BRAIN_00:Class;
+		[Embed(source = "assets/audio/brain_grab-01.mp3")] public static const SND_BRAIN_01:Class;
+		[Embed(source = "assets/audio/brain_grab-02.mp3")] public static const SND_BRAIN_02:Class;
+		[Embed(source = "assets/audio/brain_grab-03.mp3")] public static const SND_BRAIN_03:Class;	
+		public static var brainGrabResources:Array = [SND_BRAIN_00, SND_BRAIN_01, SND_BRAIN_02, SND_BRAIN_03];
+		public static var brainGrabSound:MultiSound = new MultiSound(brainGrabResources);
+
 		[Embed(source = "assets/audio/foyer_music.mp3")] public static const MUS_FOYER:Class;
 		public static var foyerMusic:Sfx = new Sfx(MUS_FOYER);
 		public function Assets()			
