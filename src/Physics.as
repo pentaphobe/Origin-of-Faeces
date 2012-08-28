@@ -14,7 +14,7 @@ package
 		public var acc:Vec2 = new Vec2(0, 0);
 		public var maxSpeed:Vec2 = new Vec2(15, 15);
 		
-		public var mass:Number = 0.5;
+		public var mass:Number = 0.75;
 		
 		public var onGround:Boolean = false;
 		public var wasOnGround:Boolean = false;

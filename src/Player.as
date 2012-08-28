@@ -101,14 +101,25 @@ package
 			layer = -6;
 			FP.console.watch(swinging, swinger);
 		}
+		
+		
+		
+		/**
+		 * This one's a beast.  MONOLITHIC! 
+		 * 
+		 */
 		override public function update():void {
 			var walked:Boolean = false;
+			
+			// "cheat" key for testing along long distances
 			if (Input.pressed(Key.S)) {
 				speed *= 3;
 				HUD.pickups["brain"] = 49;
 			}
+			
 			if (Input.check("left")) { 
 //				targetSpeed = bottomSpeed;
+				
 				if (swinging) {
 					swingVel -= 0.1;
 				} else if (acc.x > -maxSpeed.x) {
@@ -138,9 +149,13 @@ package
 				facingRight = true;
 				
 			} else {
+				// leftover from the canAPEalt times..  why is it still in here?
 				targetSpeed = (topSpeed + bottomSpeed) / 2;
 			}
+			
+			// updating this here because I was considering modified friction as an upgrade / last minute fix for jumps	
 			friction = GameWorld.friction;
+			
 			if (Input.check("jump")) {
 				if (Input.pressed("jump") && (onGround || (hasDoubleJump && canDoubleJump))) {
 //					yVel -= jumpEnergy;
@@ -160,7 +175,7 @@ package
 				} else {
 					jumpCounter -= FP.elapsed;
 					if (hasFloat) {
-						vel.y -= GameWorld.gravity * 0.35;
+						vel.y -= GameWorld.gravity * 0.25;
 					} 
 					if ((jumpCounter > 0 && vel.y < 0)) {					
 //						yVel -= jumpEnergy * 0.5;
@@ -210,11 +225,19 @@ package
 				swinging = false;
 			}
 			if (Input.pressed(Key.R)) {
+				trace("Player died because they reset");
 				(world as GameWorld).playerDied();
 			}
+			
+			// this is leftover from when it was a canabalt-alike. I wouldn't have approached it this way if I'd started
+			// in more platformer-y territory, but it was in by the end and no time to change it everywhere.
 //			topSpeed += 0.2;
-//			bottomSpeed += 0.1;
+//			bottomSpeed += 0.1;			
+			
+			// interpolate turned out feeling wrong
 			//speed += (targetSpeed - speed) * 0.1;
+			
+			// so I went for linear
 			if (speed < targetSpeed) {
 				speed += 0.1;
 			} else {
@@ -273,8 +296,11 @@ package
 				 y -= swinger.centerY;
 				 var newX:Number = x * c - y * s;
 				 var newY:Number = x * s + y * c;
-				 acc.x = (newX - x) * 4.0;			
-				 acc.y = (newY - y) * 4.0 - jumpEnergy;
+				 
+				 // I'm just updating the normal acceleration every frame here - should be a flag and "exit" procedure
+				 acc.x = (newX - x) * speed * jumpEnergy;			
+				 acc.y = (newY - y) * speed * jumpEnergy;
+				 
 				 x = newX;
 				 y = newY;
 
@@ -327,7 +353,11 @@ package
 			super.render();
 		}
 		override public function checkBounds():void {
-			if (x < world.camera.x-32 || y < world.camera.y-FP.screen.height || x > world.camera.x+FP.screen.width+32 || y > FP.screen.height) {				
+			if (x < world.camera.x-32 || y < world.camera.y-FP.screen.height || x > world.camera.x+FP.screen.width+32 || y > FP.screen.height) {
+				trace("player died because of being out of bounds");
+				trace("player pos: " + [x,y].join(","));
+				trace("camera pos, size: " + [world.camera.x, world.camera.y, FP.screen.width, FP.screen.height]);
+				trace("proper extents  : " + [world.camera.x - 32, world.camera.y-FP.screen.height, world.camera.x+FP.screen.width+32, FP.screen.height]);
 				(world as GameWorld).playerDied();
 
 			}
@@ -336,6 +366,16 @@ package
 			for (var i:int=0;i<count;i++) {
 				emitter.emit(name, xx, yy);
 			}
+		}
+		override public function move():void {
+			// store the previous X location
+			var lastX:Number = x;
+			
+			// perform movement
+			super.move();
+			
+			// update distance by the difference
+			HUD.distanceRun += x - lastX;
 		}
 	}
 }

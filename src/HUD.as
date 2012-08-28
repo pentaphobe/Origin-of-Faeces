@@ -15,6 +15,7 @@ package
 		private var scoreText:Text = new Text(String(distanceRun), 10, 8, 200, 50);
 		private var pickupText:Text = new Text("", 10, 20, 200, 50);
 		private var hintText:Text = new Text("hint", 10, 60, 200, 50);
+		private var pausedText:Text = new Text(">> PAUSED <<", 10, 60);
 		private var hintBackground:Image = new Image(Assets.HINT_BG);
 		private var profileImage:Image = new Image(Assets.APE_PROFILE);
 		public static var distanceRun:Number = 0;
@@ -44,7 +45,13 @@ package
 			hintBackground.x = hintText.x - 10;
 			hintBackground.y = hintText.y - 10;
 			hintText.alpha = 0;hintBackground.alpha = 0;
-			var display:Graphic = new Graphiclist(scoreText, pickupText, hintBackground, hintText, profileImage);
+			
+			
+			pausedText.x = (FP.screen.width / 2) - (pausedText.width / 2);
+			pausedText.y = (FP.screen.height / 2) - (pausedText.height / 2);
+			pausedText.visible = false;
+			
+			var display:Graphic = new Graphiclist(scoreText, pickupText, hintBackground, hintText, profileImage, pausedText);
 			graphic = display;
 			super(x, y, graphic);
 		}
@@ -107,6 +114,8 @@ package
 					}
 				}
 			}
+			pausedText.visible = GameWorld.isPaused;
+			
 		}	
 		/* adds a nonessential hint to be shown whenever possible
 		 */

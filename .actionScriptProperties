@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<actionScriptProperties mainApplicationPath="LD24_CanAPEalt.as" projectUUID="43e7618b-2a87-4f8c-94c5-ca3e84dc5f10" version="6">
+<actionScriptProperties mainApplicationPath="OriginOfFaeces.as" projectUUID="6325f655-d802-470c-bc5a-3d69443059ca" version="6">
   <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="0">
@@ -28,7 +28,7 @@
     <sourceAttachmentPath/>
   </compiler>
   <applications>
-    <application path="LD24_CanAPEalt.as"/>
+    <application path="OriginOfFaeces.as"/>
   </applications>
   <modules/>
   <buildCSSFiles/>

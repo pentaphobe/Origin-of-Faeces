@@ -1,16 +1,18 @@
 package
 {
 	import net.flashpunk.Entity;
+	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
-	import net.flashpunk.FP;
 	
 	public class Pickup extends Entity
 	{
 		public var pickupType:String;
-		public function Pickup(pickType:String, x:Number=0, y:Number=0, graphic:Graphic=null, mask:Mask=null)
+		private var isMagnetic:Boolean;
+		public function Pickup(pickType:String, x:Number=0, y:Number=0, graphic:Graphic=null, mask:Mask=null, isMagnetic:Boolean=true)
 		{
 			this.pickupType = pickType;
+			this.isMagnetic = isMagnetic;
 //			this.setHitbox(graphic.width, graphic.height);
 			super(x, y, graphic, mask);
 		}
@@ -19,7 +21,7 @@ package
 			if (play != null) {
 				// collision, do pickup
 				doPickup();
-			} else {
+			} else if (isMagnetic) {
 				var player:Player = GameWorld.player;
 				var dx:Number = player.x - x;
 				var dy:Number = player.y - y;

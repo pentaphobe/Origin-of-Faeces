@@ -17,7 +17,7 @@ package
 		
 		public static var friction:Vec2 = new Vec2(0.75, 0.85);
 		public static var gravity:Number = 1.0;
-		public var isPaused:Boolean = false;
+		public static var isPaused:Boolean = false;
 		
 		public var tileWorld:TileWorld;
 		public var bg:TileWorld;
@@ -36,16 +36,17 @@ package
 		
 		public function GameWorld()
 		{			
-			super();					
-		}
-		override public function begin():void {
-			FP.screen.color = 0x57708b;
+			super();			
 			Input.define("left", Key.LEFT);
 			Input.define("right", Key.RIGHT);
 			Input.define("jump", Key.Z, Key.UP);
 			Input.define("swing", Key.X);
 			Input.define("start", Key.Z, Key.SPACE);
 			Input.define("pause", Key.ESCAPE, Key.P);
+			
+		}
+		override public function begin():void {
+			FP.screen.color = 0x57708b;
 			
 			for (var i:int=0;i<2;i++) {
 				var par:Entity = new Entity(0, 0, new Backdrop(Assets.MOUNTAINS, true, false));
@@ -82,6 +83,8 @@ package
 			this.addList(parallax);
 			
 			player = new Player(FP.width / 6, 5);
+			// [@todo perhaps the source of the bug where skipping the score scene returns to the score scene with zero score?]
+			// [@... ie. perhaps this is getting a single update upon being added?]
 			add(player);
 			
 			hud = new HUD;
@@ -116,14 +119,20 @@ package
 			if (Input.pressed("pause")) {
 				isPaused = !isPaused;
 			}
-			if (isPaused) return;
+
+			// have to update the HUD so we see the >> PAUSED << text			
+			if (isPaused) {
+				hud.update();
+				return;	
+			}
 			
 			updateBuildings();
-			if (player.vel.x != 0) {
-				HUD.distanceRun += player.vel.x;
-			}
-//			tileWorld.scrollRight(player.speed * FP.elapsed);			
-//			bg.scrollRight(player.speed * FP.elapsed);
+			// [@bug this was the cause of the distance counter going up when spinning around or running continuously into walls]
+			// [@... it's leftover lazy code from when this was still a canabalt-a-like]
+			// [@... functionality is now in the Player.move() function
+//			if (player.vel.x != 0) {
+//				HUD.distanceRun += player.vel.x;				
+//			}
 			
 			var idealCameraY:Number = player.y - FP.screen.height/2;
 			var idealCameraX:Number = Math.max(leftX, player.x - FP.screen.width/4);
@@ -134,6 +143,8 @@ package
 				camera.x += (idealCameraX - camera.x) * 4 * FP.elapsed;
 			}
 			leftX = camera.x;
+			
+			// [@debug for debugging - this is a camera directly fixed to the player]
 //			camera.x = idealCameraX;
 //			camera.y = idealCameraY;
 			
@@ -151,7 +162,8 @@ package
 			super.update();
 		}
 		
-		override public function render():void {			
+		override public function render():void {		
+
 			super.render();
 		}		
 		public function addItems(building:Building) {
@@ -247,6 +259,18 @@ package
 			player.emit("sparkle", src.x, src.y, 40);
 			Assets.brainGrabSound.play(0.3);
 			recycle(src);
+		}
+		public static function pause():void {
+			isPaused = true;
+		}
+		public static function unPause():void {
+			isPaused = false;
+		}
+		override public function focusLost():void {
+			pause();
+		}
+		override public function focusGained():void {
+			unPause();
 		}
 	}
 }
